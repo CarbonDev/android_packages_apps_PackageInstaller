@@ -98,7 +98,7 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
     private void startInstallConfirm() {
         TabHost tabHost = (TabHost)findViewById(android.R.id.tabhost);
         tabHost.setup();
-        ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
+        final ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
         TabsAdapter adapter = new TabsAdapter(this, tabHost, viewPager);
 
         boolean permVisible = false;
@@ -150,9 +150,7 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
                 }
                 adapter.addTab(tabHost.newTabSpec("all").setIndicator(
                         getText(R.string.allPerms)), root);
-            }
-            else
-            {
+            } else {
                 if (mAppInfo != null) {
                     // This is an update to an application, but there are no
                     // permissions at all.
@@ -182,17 +180,13 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
                     pkgCurrent = mPm.getPackageInfo(mAppInfo.packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
                     if (pkgCurrent == null) {
                         ((TextView)layoutVersion.findViewById(R.id.app_current_version)).setText(R.string.not_available);
-                    }
-                    else
-                    {
+                    } else {
                         ((TextView)layoutVersion.findViewById(R.id.app_current_version)).setText(pkgCurrent.versionName);
                     }
-                }
-                catch (PackageManager.NameNotFoundException ex) {
+                } catch (PackageManager.NameNotFoundException ex) {
                     ((TextView)layoutVersion.findViewById(R.id.app_current_version)).setText(R.string.not_available);
                 }
-            }
-            else {
+            } else {
                 ((TextView)layoutVersion.findViewById(R.id.app_current_version)).setText(R.string.not_available);
             }
             mScrollView.addView(layoutVersion);
@@ -213,11 +207,18 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
             mOk.setText(R.string.install);
             mOkCanInstall = true;
         } else {
+            mOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                }
+            });
             mScrollView.setFullScrollAction(new Runnable() {
                 @Override
                 public void run() {
                     mOk.setText(R.string.install);
                     mOkCanInstall = true;
+                    mOk.setOnClickListener(PackageInstallerActivity.this);
                 }
             });
         }
